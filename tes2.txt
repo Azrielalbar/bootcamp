@@ -1,1 +1,3 @@
-test33
+Nama: azriel
+Umur: 20
+Hobi: basket

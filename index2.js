@@ -1,0 +1,1 @@
+console.log("nama saya azriel, nomer telepon saya 08888888888")
