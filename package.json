@@ -1,0 +1,20 @@
+{
+  "name": "bootcamp",
+  "version": "1.0.0",
+  "description": "belajar npm",
+  "main": "app.js",
+  "scripts": {
+    "start": "node readline2.js",
+    "fol": "ls",
+    "push": "git add . && git commit -m 'update' &&  git push",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "kogie"
+  ],
+  "author": "azriel albar",
+  "license": "ISC",
+  "dependencies": {
+    "validator": "^13.12.0"
+  }
+}
