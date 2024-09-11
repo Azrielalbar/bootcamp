@@ -1,3 +1,1 @@
-Nama: azriel
-Umur: 9892879
-Hobi: azrielalbar36@gmail.com
+{"nama":"azriel","nomor":"09876","email":"azriel@gmail.com"}
