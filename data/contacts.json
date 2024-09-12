@@ -1,1 +1,17 @@
-[{"nama":"azriel","nomor":"098765","email":"azriel@gmail.com"},{"nama":"kogie","nomor":"0987654","email":"kogie@gmail.com"}]
+[
+  {
+    "nama": "azriel",
+    "nomor": "098765",
+    "email": "azriel@g.com"
+  },
+  {
+    "nama": "azriel",
+    "nomor": "09876",
+    "email": "az@g.com"
+  },
+  {
+    "nama": "kogie",
+    "nomor": "098765432",
+    "email": "kogie@gmail.com"
+  }
+]

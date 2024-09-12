@@ -41,16 +41,17 @@
 
 
 
-
+//ini readline
 const readline = require("node:readline");
 const { stdin: input, stdout: output } = require("node:process");
 const { log } = require("node:console");
+//readfile
 const fs = require("fs");
 const validator = require("validator")
 
 const rl = readline.createInterface({ input, output });
 
-//membuat pertanyaan dan jawaban
+//membuat pertanyaan dan jawaban 
 rl.question("Siapa nama kamu? ", (nama) => {
     rl.question("Berapa nomor kamu? ", (nomor) => {
         rl.question("Apa email kamu? ", (email) => {
