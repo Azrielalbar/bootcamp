@@ -41,6 +41,14 @@ const saveData = (newData, filePath) => {
     const file = fs.readFileSync(filePath, 'utf-8');
     const contacts = JSON.parse(file);
 
+    // Memeriksa apakah data dengan email yang sama sudah ada
+    const isDuplicate = contacts.some(contact => contact.email === newData.email);
+
+    if (isDuplicate) {
+      console.log("Kontak dengan email ini sudah ada.");
+      return;
+    }
+
     // Menambah data baru
     contacts.push(newData);
 
