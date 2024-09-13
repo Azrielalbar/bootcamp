@@ -11,7 +11,7 @@ const rl = readline.createInterface({
 // Fungsi untuk menambah dan menyimpan data
 function addAndSaveData(nama, nomor, email, filePath) {
     const validEmail = validator.isEmail(email);
-    const validNomor = validator.isMobilePhone(nomor); // Menambahkan parameter 'any' untuk validasi lebih fleksibel
+    const validNomor = validator.isMobilePhone(nomor); 
 
     if (validEmail && validNomor) {
         // Membuat objek data baru
