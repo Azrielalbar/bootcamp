@@ -15,6 +15,7 @@
   "author": "azriel albar",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.21.0",
     "nodemon": "^3.1.4",
     "sqlite3": "^5.1.7",
     "validator": "^13.12.0",

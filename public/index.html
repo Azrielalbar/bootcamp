@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple SPA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul li {
+            margin-left: 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            color: #ddd;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        #home, #about, #contact {
+            display: none;
+        }
+
+        #home.active, #about.active, #contact.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showSection('home')">Home</a></li>
+            <li><a href="#" onclick="showSection('about')">About</a></li>
+            <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section id="home" class="active">
+        <h1>Home</h1>
+        <p>Welcome to the Home section of our website.</p>
+    </section>
+
+    <section id="about">
+        <h1>About</h1>
+        <p>This is the About section where we explain what our website is about.</p>
+    </section>
+
+    <section id="contact">
+        <h1>Contact</h1>
+        <p>This is the Contact section where you can reach us.</p>
+    </section>
+
+    <script>
+        function showSection(section) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
