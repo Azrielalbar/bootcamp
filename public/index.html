@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple SPA</title>
+    <title>Home</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,47 +39,22 @@
         section {
             padding: 20px;
         }
-
-        #home, #about, #contact {
-            display: none;
-        }
-
-        #home.active, #about.active, #contact.active {
-            display: block;
-        }
     </style>
 </head>
 <body>
 
     <nav>
         <ul>
-            <li><a href="#" onclick="showSection('home')">Home</a></li>
-            <li><a href="#" onclick="showSection('about')">About</a></li>
-            <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
         </ul>
     </nav>
 
-    <section id="home" class="active">
+    <section>
         <h1>Home</h1>
         <p>Welcome to the Home section of our website.</p>
     </section>
-
-    <section id="about">
-        <h1>About</h1>
-        <p>This is the About section where we explain what our website is about.</p>
-    </section>
-
-    <section id="contact">
-        <h1>Contact</h1>
-        <p>This is the Contact section where you can reach us.</p>
-    </section>
-
-    <script>
-        function showSection(section) {
-            document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(section).classList.add('active');
-        }
-    </script>
 
 </body>
 </html>

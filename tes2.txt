@@ -1,1 +1,0 @@
-{"nama":"azriel","nomor":"09876","email":"azriel@gmail.com"}

@@ -6,37 +6,74 @@
     <title>Contact</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        /* Custom styles for the Contact page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul li {
+            margin-left: 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            color: #ddd;
+        }
+
         section {
             padding: 20px;
         }
-        .contact {
-            max-width: 800px;
-            margin: 0 auto;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        form label {
-            margin-top: 10px;
-        }
-        form input, form textarea {
-            margin-bottom: 10px;
-            padding: 10px;
+
+        table, th, td {
             border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px;
         }
-        form button {
-            padding: 10px;
-            background-color: #333;
+
+        th {
+            background-color: #4CAF50; /* Hijau */
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            text-align: left;
         }
-        form button:hover {
-            background-color: #555;
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Warna latar untuk baris genap */
+        }
+
+        tr:hover {
+            background-color: #ddd; /* Warna latar saat hover */
+        }
+
+        th, td {
+            text-align: left;
+            font-size: 16px; /* Ukuran font */
+        }
+
+        h1 {
+            color: #333; /* Warna judul */
+            text-align: center;
         }
     </style>
 </head>
@@ -53,22 +90,41 @@
     </header>
 
     <section class="contact">
-        <h1>Contact Us</h1>
-        <p>If you have any questions or feedback, please reach out to us through the form below:</p>
-        <form>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="4" required></textarea>
-            <button type="submit">Send Message</button>
-        </form>
+        <h1>Contact List</h1>
+        <table id="contact-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Kontak akan dimasukkan di sini oleh JavaScript -->
+            </tbody>
+        </table>
     </section>
 
     <footer>
         <p>&copy; 2024 My Website. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Mengambil data dari contacts.json menggunakan Fetch API
+        fetch('/contacts.json')
+            .then(response => response.json())
+            .then(data => {
+                const contactTable = document.getElementById('contact-table').getElementsByTagName('tbody')[0];
+                data.forEach(contact => {
+                    const row = contactTable.insertRow();
+                    const cellName = row.insertCell(0);
+                    const cellEmail = row.insertCell(1);
+
+                    cellName.textContent = contact.name;
+                    cellEmail.textContent = contact.email;
+                });
+            })
+            .catch(error => console.error('Error fetching contacts:', error));
+    </script>
 
 </body>
 </html>

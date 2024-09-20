@@ -14,7 +14,7 @@ body {
 
 /* Header and Navigation */
 header {
-    background-color: #333;
+    background-color: #002aff;
     color: #fff;
     padding: 10px 0;
     position: relative;
@@ -102,7 +102,7 @@ nav ul li a:hover {
 
 /* Footer */
 footer {
-    background-color: #333;
+    background-color: #ff0000;
     color: #fff;
     text-align: center;
     padding: 10px 0;
