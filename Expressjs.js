@@ -1,53 +1,43 @@
-const express = require("express");
-const path = require("path");
+const express = require('express');
 const app = express();
-const port = 3000;
-const fs = require("fs");
+const expressLayouts = require('express-ejs-layouts');
+const bodyParser = require('body-parser');
 
-app.set("view engine", "ejs");
+// Set view engine ke EJS
+app.set('view engine', 'ejs');
 
-// Middleware untuk melayani file statis
-app.use(express.static(path.join(__dirname, 'public')));
+// Gunakan express-ejs-layouts middleware
+app.use(expressLayouts);
 
-// Route untuk halaman utama
-app.get("/", (req, res) => {
-    const nama = "kogie6";
-    res.render('index', { nama, title: "Home" });
+// Gunakan body-parser untuk menangani POST request
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Tentukan folder untuk file EJS
+app.set('views', './views');
+
+// Route untuk halaman Home
+app.get('/', (req, res) => {
+  res.render('index', { title: 'Home Page' });
 });
 
-// Route untuk mengarahkan /index ke /
-app.get("/index", (req, res) => {
-    res.redirect("/");
+// Route untuk halaman About
+app.get('/about', (req, res) => {
+  res.render('about', { title: 'About Us' });
 });
 
-// Route untuk halaman tentang
-app.get("/about", (req, res) => {
-    res.render('about', { title: 'About Us' });
+// Route untuk halaman Contact (GET)
+app.get('/contact', (req, res) => {
+  res.render('contact', { title: 'Contact Us' });
 });
 
-// Route untuk halaman kontak
-app.get('/contacts', (req, res) => {
-    fs.readFile(path.join(__dirname, 'contacts.json'), 'utf-8', (err, data) => {
-        if (err) {
-            return res.status(500).send('Error reading contacts file.');
-        }
-        const contacts = JSON.parse(data);
-        res.render('contacts', { title: 'Contacts', contacts });
-    });
+// Route POST untuk form Contact
+app.post('/contact', (req, res) => {
+  const { name, email, message } = req.body;
+  console.log(`Message received from ${name} (${email}): ${message}`);
+  res.send('Thank you for contacting us!');
 });
 
-// Route untuk produk dengan kategori
-app.get("/product/:prodID/category/:catID", (req, res) => {
-    const { prodID, catID } = req.params;
-    res.send(`Product ID: ${prodID} <b>Category ID: ${catID}</b>`);
-});
-
-// Route untuk halaman tidak ditemukan
-app.use((req, res) => {
-    res.status(404).send("Page not found");
-});
-
-// Mulai server
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+// Jalankan server di port 3000
+app.listen(3000, () => {
+  console.log('Server berjalan di http://localhost:3000');
 });
