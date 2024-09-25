@@ -27,6 +27,12 @@ app.set('views', './views');
 // Tentukan folder untuk file statis seperti gambar
 app.use(express.static(path.join(__dirname, 'image')));
 
+// Fungsi untuk memvalidasi email
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 // Route untuk halaman Home
 app.get('/', (req, res) => {
     res.render('index', { title: 'Home Page' });
@@ -55,12 +61,40 @@ app.get('/contact', (req, res) => {
     });
 });
 
+// Route untuk mendapatkan detail kontak (GET)
+app.get('/contact/details/:id', (req, res) => {
+    const contactId = req.params.id;
+
+    // Baca data dari contacts.json
+    fs.readFile('./contacts.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error reading contact data.');
+        }
+        const contacts = JSON.parse(data);
+        const contact = contacts.find(c => c.id === contactId);
+
+        if (contact) {
+            res.json(contact); // Kirim detail kontak sebagai JSON
+        } else {
+            res.status(404).send('Contact not found');
+        }
+    });
+});
+
 // Route untuk menambahkan kontak (POST)
 app.post('/contact/add', (req, res) => {
+    const { name, email } = req.body;
+
+    // Validasi email
+    if (!isValidEmail(email)) {
+        return res.status(400).send('Email tidak valid');
+    }
+
     const newContact = {
         id: Date.now().toString(), // Menambahkan ID unik
-        name: req.body.name,
-        email: req.body.email,
+        name,
+        email,
     };
 
     // Baca data dari contacts.json
@@ -106,6 +140,49 @@ app.delete('/contact/delete/:id', (req, res) => {
             }
             res.send('Contact deleted successfully.'); // Kirim respons sukses
         });
+    });
+});
+
+// Route untuk mengupdate kontak (POST)
+app.post('/contact/update/:id', (req, res) => {
+    const contactId = req.params.id;
+    const { name, email } = req.body;
+
+    // Validasi email
+    if (!isValidEmail(email)) {
+        return res.status(400).send('Email tidak valid');
+    }
+
+    const updatedContact = {
+        id: contactId,
+        name,
+        email,
+    };
+
+    // Baca data dari contacts.json
+    fs.readFile('./contacts.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error reading contact data.');
+        }
+        let contacts = JSON.parse(data); // Parse data JSON
+
+        // Update kontak yang sesuai dengan ID
+        const index = contacts.findIndex(contact => contact.id === contactId);
+        if (index !== -1) {
+            contacts[index] = updatedContact; // Perbarui data kontak
+
+            // Simpan kembali ke contacts.json
+            fs.writeFile('./contacts.json', JSON.stringify(contacts, null, 2), (err) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Error saving contact data.');
+                }
+                res.redirect('/contact'); // Redirect kembali ke halaman kontak
+            });
+        } else {
+            res.status(404).send('Contact not found');
+        }
     });
 });
 
