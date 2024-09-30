@@ -4,6 +4,8 @@ const expressLayouts = require('express-ejs-layouts');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const flash = require('connect-flash');
+const session = require('express-session');
 
 // Middleware untuk logging
 app.use((req, res, next) => {
@@ -33,6 +35,26 @@ const isValidEmail = (email) => {
     return emailRegex.test(email);
 };
 
+// Fungsi untuk membaca data kontak dari file
+function readContactsFromFile() {
+    try {
+        const data = fs.readFileSync('./contacts.json', 'utf8'); // Pastikan jalur file sesuai
+        return JSON.parse(data); // Kembalikan data dalam bentuk array
+    } catch (error) {
+        console.error('Error reading contacts:', error);
+        return []; // Kembalikan array kosong jika terjadi error
+    }
+}
+
+// Fungsi untuk menyimpan data kontak ke file
+function saveContactsToFile(contacts) {
+    try {
+        fs.writeFileSync('./contacts.json', JSON.stringify(contacts, null, 2)); // Simpan kontak
+    } catch (error) {
+        console.error('Error saving contacts:', error);
+    }
+}
+
 // Route untuk halaman Home
 app.get('/', (req, res) => {
     res.render('index', { title: 'Home Page' });
@@ -50,36 +72,21 @@ app.get('/about', (req, res) => {
 
 // Route untuk halaman Contact (GET)
 app.get('/contact', (req, res) => {
-    // Baca data dari contacts.json
-    fs.readFile('./contacts.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading contact data.');
-        }
-        const contacts = JSON.parse(data); // Parse data JSON
-        res.render('contact', { title: 'Contact Us', contacts }); // Kirim data ke view
-    });
+    const contacts = readContactsFromFile(); // Baca data dari contacts.json
+    res.render('contact', { title: 'Contact Us', contacts }); // Kirim data ke view
 });
 
 // Route untuk mendapatkan detail kontak (GET)
 app.get('/contact/details/:id', (req, res) => {
     const contactId = req.params.id;
+    const contacts = readContactsFromFile(); // Baca data dari contacts.json
+    const contact = contacts.find(c => c.id === contactId);
 
-    // Baca data dari contacts.json
-    fs.readFile('./contacts.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading contact data.');
-        }
-        const contacts = JSON.parse(data);
-        const contact = contacts.find(c => c.id === contactId);
-
-        if (contact) {
-            res.json(contact); // Kirim detail kontak sebagai JSON
-        } else {
-            res.status(404).send('Contact not found');
-        }
-    });
+    if (contact) {
+        res.json(contact); // Kirim detail kontak sebagai JSON
+    } else {
+        res.status(404).send('Contact not found');
+    }
 });
 
 // Route untuk menambahkan kontak (POST)
@@ -97,51 +104,34 @@ app.post('/contact/add', (req, res) => {
         email,
     };
 
-    // Baca data dari contacts.json
-    fs.readFile('./contacts.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading contact data.');
-        }
-        const contacts = JSON.parse(data); // Parse data JSON
-        contacts.push(newContact); // Tambahkan kontak baru
+    const contacts = readContactsFromFile(); // Baca data dari contacts.json
+    contacts.push(newContact); // Tambahkan kontak baru
+    saveContactsToFile(contacts); // Simpan kembali ke contacts.json
 
-        // Simpan kembali ke contacts.json
-        fs.writeFile('./contacts.json', JSON.stringify(contacts, null, 2), (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('Error saving contact data.');
-            }
-            res.redirect('/contact'); // Redirect kembali ke halaman kontak
-        });
-    });
+    res.redirect('/contact'); // Redirect kembali ke halaman kontak
 });
 
 // Route untuk menghapus kontak (DELETE)
 app.delete('/contact/delete/:id', (req, res) => {
     const contactId = req.params.id;
+    let contacts = readContactsFromFile(); // Baca data dari contacts.json
 
-    // Baca data dari contacts.json
-    fs.readFile('./contacts.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading contact data.');
-        }
-        let contacts = JSON.parse(data); // Parse data JSON
+    // Filter kontak yang tidak sesuai ID yang diberikan
+    contacts = contacts.filter(contact => contact.id !== contactId);
+    saveContactsToFile(contacts); // Tulis kembali data kontak yang sudah diperbarui ke file
 
-        // Filter kontak yang tidak sesuai ID yang diberikan
-        contacts = contacts.filter(contact => contact.id !== contactId);
-
-        // Tulis kembali data kontak yang sudah diperbarui ke file
-        fs.writeFile('./contacts.json', JSON.stringify(contacts, null, 2), (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('Error saving contact data.');
-            }
-            res.send('Contact deleted successfully.'); // Kirim respons sukses
-        });
-    });
+    req.flash('success', 'Contact deleted successfully!'); // Menyimpan pesan sukses
+    res.redirect('/contact'); // Redirect kembali ke halaman kontak
 });
+
+// Setup session dan flash
+app.use(session({
+    secret: 'your secret key', // Ganti dengan kunci rahasia Anda
+    resave: false,
+    saveUninitialized: true,
+}));
+
+app.use(flash());
 
 // Route untuk mengupdate kontak (POST)
 app.post('/contact/update/:id', (req, res) => {
@@ -153,37 +143,26 @@ app.post('/contact/update/:id', (req, res) => {
         return res.status(400).send('Email tidak valid');
     }
 
-    const updatedContact = {
+    const contacts = readContactsFromFile(); // Baca data kontak dari file
+    const contactIndex = contacts.findIndex(contact => contact.id === contactId); // Cek index kontak
+
+    // Cek apakah kontak ada
+    if (contactIndex === -1) {
+        return res.status(404).send('Kontak tidak ditemukan');
+    }
+
+    // Perbarui data kontak
+    contacts[contactIndex] = {
         id: contactId,
         name,
         email,
     };
 
-    // Baca data dari contacts.json
-    fs.readFile('./contacts.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading contact data.');
-        }
-        let contacts = JSON.parse(data); // Parse data JSON
+    // Simpan perubahan ke file
+    saveContactsToFile(contacts); 
 
-        // Update kontak yang sesuai dengan ID
-        const index = contacts.findIndex(contact => contact.id === contactId);
-        if (index !== -1) {
-            contacts[index] = updatedContact; // Perbarui data kontak
-
-            // Simpan kembali ke contacts.json
-            fs.writeFile('./contacts.json', JSON.stringify(contacts, null, 2), (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).send('Error saving contact data.');
-                }
-                res.redirect('/contact'); // Redirect kembali ke halaman kontak
-            });
-        } else {
-            res.status(404).send('Contact not found');
-        }
-    });
+    // Kirim respons
+    res.status(200).send('Kontak berhasil diperbarui');
 });
 
 // Jalankan server di port 3000

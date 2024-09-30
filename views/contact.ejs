@@ -64,6 +64,7 @@
             <button id="confirmDeleteBtn" style="width: 100%; padding: 12px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
         </div>
     </div>
+    
 
     <script>
         // Show modal on button click
@@ -210,6 +211,20 @@
         .catch(err => console.error(err));
     }
 </script>
+
+<script>
+    // Mengambil elemen notifikasi
+    const notification = document.querySelector('.notification');
+    if (notification) {
+        notification.classList.add('show'); // Tampilkan notifikasi
+
+        // Menghilangkan notifikasi setelah 3 detik
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+</script>
+
 
 <!-- Modal untuk Update Kontak -->
 <div id="updateModal" class="modal" style="display: none;">
