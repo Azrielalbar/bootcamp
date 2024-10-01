@@ -15,6 +15,7 @@
                     <td style="border: 1px solid #ccc; padding: 10px; text-align: center;"><%= contact.name %></td>
                     <td style="border: 1px solid #ccc; padding: 10px; text-align: center;"><%= contact.email %></td>
                     <td style="border: 1px solid #ccc; padding: 10px; text-align: center;">
+                        <button onclick="viewDetails('<%= contact.name %>', '<%= contact.mobile %>', '<%= contact.email %>')">Detail</button>
                         <button onclick="openUpdateModal('<%= contact.name %>', '<%= contact.mobile %>', '<%= contact.email %>')">Update</button>
                         <button onclick="openDeleteModal('<%= contact.name %>')">Delete</button>
                     </td>
@@ -68,6 +69,17 @@
         </div>
     </div>
 
+    <!-- Modal for Contact Details -->
+    <div id="detailModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="closeDetailModal">&times;</span>
+            <h2>Contact Details</h2>
+            <p><strong>Name:</strong> <span id="detailContactName"></span></p>
+            <p><strong>Mobile:</strong> <span id="detailContactMobile"></span></p>
+            <p><strong>Email:</strong> <span id="detailContactEmail"></span></p>
+        </div>
+    </div>
+
     <script>
         // Open Add Modal
         document.getElementById('addDataBtn').addEventListener('click', function() {
@@ -102,6 +114,19 @@
         // Close Delete Modal
         document.getElementById('closeDeleteModal').addEventListener('click', function() {
             document.getElementById('deleteModal').style.display = 'none';
+        });
+
+        // Open Detail Modal
+        function viewDetails(name, mobile, email) {
+            document.getElementById('detailContactName').textContent = name;
+            document.getElementById('detailContactMobile').textContent = mobile;
+            document.getElementById('detailContactEmail').textContent = email;
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        // Close Detail Modal
+        document.getElementById('closeDetailModal').addEventListener('click', function() {
+            document.getElementById('detailModal').style.display = 'none';
         });
     </script>
 </div>
