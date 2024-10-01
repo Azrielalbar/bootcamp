@@ -10,4 +10,11 @@ const pool = new Pool({
     port:"5432",
 });
 
+pool.connect((err, contacts, release) => {
+    if (err) {
+        return console.error('Error acquiring contacts', err.stack);
+    }
+    console.log('Connected to PostgreSQL database');
+});
+
 module.exports = pool;

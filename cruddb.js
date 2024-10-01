@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
-const pool = require('./db'); 
+const pool = require('./db'); // Import database connection
 
 // Middleware untuk logging
 app.use((req, res, next) => {
@@ -21,11 +21,25 @@ app.use(bodyParser.json());
 app.set('views', './views');
 app.use(express.static(path.join(__dirname, 'image')));
 
-// Fungsi untuk memvalidasi email
-const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
+// Setup session dan flash
+app.use(session({
+    secret: 'your secret key',
+    resave: false,
+    saveUninitialized: true,
+}));
+
+app.use(flash());
+
+// Fungsi untuk mendapatkan semua kontak
+async function getData() {
+    try {
+        const result = await pool.query('SELECT * FROM contacts');
+        return result.rows;
+    } catch (error) {
+        console.error("Gagal mengambil data dari database:", error.message);
+        throw error;
+    }
+}
 
 // Route untuk halaman Home
 app.get('/', (req, res) => {
@@ -37,7 +51,7 @@ app.get('/about', (req, res) => {
     res.render('about', {
         title: 'About Me',
         name: 'Kogie',
-        hobbies: 'membaca buku, bermain game, dan mendengarkan musik',
+        hobbies: 'Membaca buku, bermain game, dan mendengarkan musik',
         imageUrl: '/images/path-to-your-photo.jpg'
     });
 });
@@ -45,94 +59,87 @@ app.get('/about', (req, res) => {
 // Route untuk halaman Contact (GET)
 app.get('/contact', async (req, res) => {
     try {
-        const contacts = await pool.query('SELECT * FROM contacts');
-        res.render('contact', { title: 'Contact Us', contacts: contacts.rows });
+        const contacts = await getData();
+        res.render('contact', { title: 'Contact Us', contacts });
     } catch (error) {
         console.error('Error fetching contacts:', error);
         res.status(500).send('Error fetching contacts');
     }
 });
 
-// Route untuk mendapatkan detail kontak (GET)
-app.get('/contact/details/:id', async (req, res) => {
-    const contactId = req.params.id;
-    try {
-        const contact = await pool.query('SELECT * FROM contacts WHERE id = $1', [contactId]);
-        if (contact.rows.length > 0) {
-            res.json(contact.rows[0]);
-        } else {
-            res.status(404).send('Contact not found');
-        }
-    } catch (error) {
-        console.error('Error fetching contact details:', error);
-        res.status(500).send('Error fetching contact details');
-    }
-});
-
-// Route untuk menambahkan kontak (POST)
-app.post('/contact/add', async (req, res) => {
+// Route untuk menambah kontak (POST)
+app.post("/contact/add", async (req, res) => {
     const { name, mobile, email } = req.body;
 
-    // Validasi email
-    if (!isValidEmail(email)) {
-        return res.status(400).send('Email tidak valid');
-    }
-
     try {
-        const newContact = await pool.query(
-            'INSERT INTO contacts (name, mobile, email) VALUES ($1, $2, $3) RETURNING *',
-            [name, mobile, email]
-        );
-        res.redirect('/contact');
-    } catch (error) {
-        console.error('Error adding contact:', error);
-        res.status(500).send('Error adding contact');
-    }
-});
+        let contact = await pool.query('SELECT * FROM contacts WHERE name = $1', [name]);
 
-// Route untuk menghapus kontak (DELETE)
-app.delete('/contact/delete/:id', async (req, res) => {
-    const contactId = req.params.id;
+        if (contact.rows.length > 0) {
+            console.log("Nama sudah ada");
+            return res.redirect('/contact');
+        }
 
-    try {
-        await pool.query('DELETE FROM contacts WHERE id = $1', [contactId]);
-        req.flash('success', 'Contact deleted successfully!');
-        res.redirect('/contact');
-    } catch (error) {
-        console.error('Error deleting contact:', error);
-        res.status(500).send('Error deleting contact');
-    }
-});
-
-// Setup session dan flash
-app.use(session({
-    secret: 'your secret key', // Ganti dengan kunci rahasia Anda
-    resave: false,
-    saveUninitialized: true,
-}));
-
-app.use(flash());
-
-// Route untuk mengupdate kontak (POST)
-app.post('/contact/update/:id', async (req, res) => {
-    const contactId = req.params.id;
-    const { name, email } = req.body;
-
-    // Validasi email
-    if (!isValidEmail(email)) {
-        return res.status(400).send('Email tidak valid');
-    }
-
-    try {
         await pool.query(
-            'UPDATE contacts SET name = $1, email = $2 WHERE id = $3',
-            [name, email, contactId]
+            'INSERT INTO contacts (name, mobile, email) VALUES ($1, $2, $3)', [name, mobile, email]
         );
-        res.status(200).send('Kontak berhasil diperbarui');
+
+        res.redirect("/contact");
     } catch (error) {
-        console.error('Error updating contact:', error);
-        res.status(500).send('Error updating contact');
+        console.error("Error adding contact:", error);
+        res.status(500).send("Internal Server Error");
     }
+});
+
+// Route untuk update kontak (POST)
+app.post("/contact/update", async (req, res) => {
+    const { oldName, name, mobile, email } = req.body;
+
+    try {
+        let contact = await pool.query('SELECT * FROM contacts WHERE name = $1', [oldName]);
+
+        if (contact.rows.length === 0) {
+            console.log("Kontak tidak ditemukan");
+            return res.redirect('/contact');
+        }
+
+        await pool.query(
+            'UPDATE contacts SET name = $1, mobile = $2, email = $3 WHERE name = $4',
+            [name, mobile, email, oldName]
+        );
+
+        console.log("Kontak berhasil diupdate");
+        res.redirect("/contact");
+    } catch (error) {
+        console.error("Error updating contact:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+// Route untuk menghapus kontak (POST)
+app.post('/contacts/delete', async (req, res) => {
+    const { name } = req.body;
+
+    try {
+        let contact = await pool.query('SELECT * FROM contacts WHERE name = $1', [name]);
+
+        if (contact.rows.length === 0) {
+            return res.status(404).send('Kontak tidak ditemukan');
+        }
+
+        await pool.query('DELETE FROM contacts WHERE name = $1', [name]);
+
+        console.log(`Kontak ${name} berhasil dihapus`);
+        res.redirect('/contact');
+    } catch (error) {
+        console.error("Error deleting contact:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+// Route untuk halaman 404
+app.use("/", (req, res) => {
+    res.status(404);
+    res.send("Page not found: 404");
 });
 
 // Jalankan server di port 3000

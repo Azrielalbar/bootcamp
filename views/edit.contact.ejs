@@ -1,0 +1,5 @@
+<form action="/contact/update/<%= contact.id %>" method="POST">
+    <input type="text" name="name" value="<%= contact.name %>" required>
+    <input type="email" name="email" value="<%= contact.email %>" required>
+    <button type="submit">Update Contact</button>
+</form>
