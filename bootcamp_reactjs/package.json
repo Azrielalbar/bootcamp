@@ -16,8 +16,12 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "push": "git add . && git commit -m '18state' &&  git push",
     "eject": "react-scripts eject"
   },
+  "keywords": [
+    "kogie"
+  ],
   "eslintConfig": {
     "extends": [
       "react-app",

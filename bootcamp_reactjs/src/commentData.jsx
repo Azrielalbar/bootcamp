@@ -4,7 +4,7 @@ import {faker} from '@faker-js/faker'
 const commentsData = [
     {
       avatar: faker.image.avatar(),
-      author: "John Doe",
+      author: "Dadang",
       date: "Today at 5:00 PM",
       comment: "This is a great post!",
     },
