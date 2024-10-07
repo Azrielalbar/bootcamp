@@ -16,7 +16,7 @@ function App(props) {
 function Data() {
     return (
         <div>
-            <App name= "kogie" job= "copywriter" />
+            {/* <App name= "kogie" job= "copywriter" /> */}
             <App name= "savy" job= "web developer" />
         </div>
     )
