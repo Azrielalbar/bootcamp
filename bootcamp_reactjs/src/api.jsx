@@ -1,77 +1,70 @@
-import React, { useState } from 'react'; // Import React dan useState untuk membuat state dan komponen
+import React, { useRef, useState } from 'react'; // Import useRef untuk menggunakan refs dan useState untuk status
 import axios from 'axios'; // Import axios untuk melakukan request HTTP ke API
 
 const UnsplashSearch = () => {
-  // State untuk menyimpan query dari input, foto yang didapat dari API, status loading, dan error
-  const [query, setQuery] = useState(''); // State untuk menyimpan kata kunci pencarian dari input pengguna
-  const [photos, setPhotos] = useState([]); // State untuk menyimpan hasil foto yang diterima dari API Unsplash
-  const [loading, setLoading] = useState(false); // State untuk menunjukkan status loading (apakah data sedang diambil)
-  const [error, setError] = useState(null); // State untuk menyimpan pesan error jika ada kesalahan saat pengambilan data
+  const queryRef = useRef(null); // Ref untuk merujuk elemen input
+  const buttonRef = useRef(null); // Ref untuk merujuk elemen tombol
+  const gridRef = useRef(null); // Ref untuk merujuk grid container
+
+  const [photos, setPhotos] = useState([]); // State untuk menyimpan hasil foto dari Unsplash API
+  const [loading, setLoading] = useState(false); // State untuk menunjukkan status loading
+  const [error, setError] = useState(null); // State untuk menyimpan error jika terjadi kesalahan
 
   // Fungsi asinkron untuk mencari gambar dari API Unsplash berdasarkan query dari pengguna
   const searchImage = async () => {
-    // Unsplash API Access Key (API Key) untuk mengakses API
-    const accessKey = 'CXDMqo-CmxDSOfNdJuKadvlq06uaEijTvWiBd5mM47g'; 
-    // Endpoint URL untuk melakukan pencarian gambar dari Unsplash berdasarkan query yang diketikkan pengguna
-    const url = `https://api.unsplash.com/search/photos?query=${query}&client_id=${accessKey}`;
+    const accessKey = 'CXDMqo-CmxDSOfNdJuKadvlq06uaEijTvWiBd5mM47g'; // API key untuk akses Unsplash API
+    const query = queryRef.current.value; // Mengambil nilai dari input menggunakan ref
+    const url = `https://api.unsplash.com/search/photos?query=${query}&client_id=${accessKey}`; // URL API dengan query pengguna
 
-    // Set loading ke true ketika memulai proses pengambilan gambar
-    setLoading(true);
-    // Reset error menjadi null sebelum pencarian baru dimulai
-    setError(null);
+    setLoading(true); // Set loading menjadi true ketika proses pencarian dimulai
+    setError(null); // Reset error sebelum pencarian baru dimulai
 
     try {
-      // Melakukan request GET ke Unsplash API menggunakan axios
-      const response = await axios.get(url);
-      // Menyimpan hasil foto yang didapat dari response API ke dalam state 'photos'
-      setPhotos(response.data.results);
-      // Setelah data berhasil didapat, set loading menjadi false
-      setLoading(false);
+      const response = await axios.get(url); // Request ke Unsplash API menggunakan axios
+      setPhotos(response.data.results); // Simpan hasil foto dari response ke state 'photos'
+      setLoading(false); // Setelah data diambil, loading diset ke false
+      gridRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll ke hasil gambar
     } catch (error) {
-      // Jika terjadi kesalahan, tampilkan pesan error di state 'error'
-      setError('Error fetching images');
-      // Setelah gagal, set loading menjadi false
-      setLoading(false);
+      setError('Error fetching images'); // Jika terjadi error, simpan pesan error
+      setLoading(false); // Setelah gagal, loading diset ke false
     }
   };
 
   // Return JSX untuk merender komponen di layar
   return (
     <div style={styles.container}>
-      {/* Menampilkan judul di bagian atas */}
+      {/* Judul halaman */}
       <h1 style={styles.title}>Unsplash Image Search</h1>
 
-      {/* Input box dan tombol search */}
+      {/* Input dan tombol search */}
       <div style={styles.searchBox}>
-        {/* Input text untuk mengetikkan query/kata kunci pencarian */}
         <input
           type="text"
-          placeholder="Search for images..." // Placeholder teks pada input
-          value={query} // Mengikat input dengan state 'query'
-          onChange={(e) => setQuery(e.target.value)} // Meng-update state 'query' saat input berubah
-          style={styles.input} // Gaya CSS untuk input text
+          placeholder="Search for images..." // Placeholder yang ditampilkan di input
+          ref={queryRef} // Gunakan ref untuk mengakses input
+          style={styles.input} // Gaya CSS untuk input
         />
-        {/* Tombol untuk memulai pencarian */}
-        <button onClick={searchImage} style={styles.button}>Search</button>
+        {/* Tombol untuk memulai pencarian gambar */}
+        <button onClick={searchImage} ref={buttonRef} style={styles.button}>Search</button>
       </div>
 
-      {/* Menampilkan teks loading saat data sedang diambil */}
+      {/* Jika status loading true, tampilkan teks 'Loading...' */}
       {loading && <p style={styles.loading}>Loading...</p>}
-      {/* Menampilkan pesan error jika terjadi kesalahan saat fetching */}
+      {/* Jika ada error, tampilkan pesan error */}
       {error && <p style={styles.error}>{error}</p>}
 
-      {/* Grid yang digunakan untuk menampilkan gambar hasil pencarian */}
-      <div style={styles.grid}>
-        {/* Mengiterasi setiap foto dari array photos dan menampilkan setiap foto di dalam grid */}
+      {/* Menampilkan grid gambar hasil pencarian */}
+      <div ref={gridRef} style={styles.grid}>
+        {/* Iterasi setiap foto dalam state 'photos' untuk ditampilkan di dalam grid */}
         {photos.map((photo) => (
           <div key={photo.id} style={styles.photoCard}>
-            {/* Menampilkan gambar dari hasil pencarian */}
+            {/* Gambar yang diambil dari API Unsplash */}
             <img
-              src={photo.urls.small} // URL gambar ukuran kecil yang diambil dari Unsplash API
-              alt={photo.alt_description} // Deskripsi alternatif gambar
+              src={photo.urls.small} // URL gambar kecil dari Unsplash
+              alt={photo.alt_description} // Deskripsi alternatif untuk gambar
               style={styles.image} // Gaya CSS untuk gambar
             />
-            {/* Menampilkan nama fotografer di bawah gambar */}
+            {/* Caption yang menampilkan nama fotografer */}
             <p style={styles.caption}>Photo by {photo.user.name}</p>
           </div>
         ))}
@@ -80,11 +73,11 @@ const UnsplashSearch = () => {
   );
 };
 
-// Gaya CSS yang dituliskan dalam objek JavaScript dan diterapkan langsung ke elemen
+// Gaya CSS dalam objek JavaScript yang diterapkan langsung ke elemen
 const styles = {
   container: {
-    fontFamily: 'Arial, sans-serif', // Font default untuk seluruh halaman
-    textAlign: 'center', // Mengatur teks agar berada di tengah halaman
+    fontFamily: 'Arial, sans-serif', // Font default untuk halaman
+    textAlign: 'center', // Teks diatur agar berada di tengah halaman
     padding: '20px', // Padding agar konten tidak menempel pada tepi
     backgroundColor: '#f9f9f9', // Warna latar belakang yang lembut
     minHeight: '100vh', // Tinggi minimum halaman adalah 100% dari viewport (layar penuh)
@@ -95,7 +88,7 @@ const styles = {
     marginBottom: '20px', // Jarak bawah dari judul ke elemen berikutnya
   },
   searchBox: {
-    marginBottom: '20px', // Jarak bawah dari search box ke elemen lainnya
+    marginBottom: '20px', // Jarak bawah antara input dan tombol ke elemen lain
   },
   input: {
     padding: '10px', // Padding dalam input text
@@ -112,7 +105,7 @@ const styles = {
     backgroundColor: '#007bff', // Warna latar belakang tombol (biru)
     color: '#fff', // Warna teks pada tombol (putih)
     border: 'none', // Menghilangkan border tombol default
-    cursor: 'pointer', // Mengubah kursor menjadi pointer saat mouse di atas tombol
+    cursor: 'pointer', // Kursor akan berubah menjadi pointer saat berada di atas tombol
     fontSize: '16px', // Ukuran font pada tombol
   },
   grid: {
@@ -122,15 +115,16 @@ const styles = {
     padding: '20px', // Padding di dalam grid container
   },
   photoCard: {
-    borderRadius: '8px', // Membulatkan tepi container gambar
+    borderRadius: '10px', // Membulatkan tepi container gambar
     overflow: 'hidden', // Menyembunyikan elemen yang keluar dari border
     boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Bayangan lembut di sekitar card
     backgroundColor: '#fff', // Warna latar belakang container gambar
   },
   image: {
-    width: '100%', // Gambar akan mengambil seluruh lebar container
-    height: 'auto', // Tinggi gambar akan menyesuaikan proporsi
-    display: 'block', // Menghilangkan jarak bawaan gambar (inline-block)
+    width: '250px',  // Ukuran lebar tetap untuk gambar
+    height: '250px', // Ukuran tinggi tetap untuk gambar
+    objectFit: 'cover',  // Gambar akan memenuhi container tanpa terdistorsi
+    display: 'block',  // Menghilangkan jarak bawaan gambar (inline-block)
   },
   caption: {
     padding: '10px', // Padding di sekitar teks caption
@@ -146,4 +140,4 @@ const styles = {
   },
 };
 
-export default UnsplashSearch; // Ekspor komponen UnsplashSearch agar dapat digunakan di bagian lain aplikasi
+export default UnsplashSearch; // Ekspor komponen UnsplashSearch agar bisa digunakan di bagian lain aplikasi
