@@ -1,0 +1,57 @@
+/* navbar.css */
+
+/* Styling untuk navbar */
+.navbar {
+    background-color: #333;
+    padding: 1rem;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Styling untuk link brand di navbar */
+  .navbar-brand {
+    font-size: 1.5rem;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .navbar-brand:hover {
+    color: #ddd;
+  }
+  
+  /* Styling untuk daftar navigasi */
+  .navbar-nav {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Styling untuk item navigasi */
+  .nav-item {
+    list-style: none;
+  }
+  
+  /* Styling untuk link navigasi */
+  .nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  
+  .nav-link:hover {
+    color: #ddd;
+  }
+  
+  /* Styling untuk container jam */
+  .clock-container {
+    color: #fff;
+    font-size: 1rem;
+    margin-right: 2rem;
+  }
+  

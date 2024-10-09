@@ -1,25 +1,20 @@
-// import Comment from "./comment";
+
 import Navbar from "./navbar";
-import Data from "./PROPS-Class";
-import Count from "./State";
-import React from "react";
-import Inputdata from "./input"; 
-import Clock from "./clock";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import YoutubeSearch from "./02.APIYT";
-// import UnsplashSearch from "./api"
+import Home from "./home";
+import About from "./about";
 
 function App() {
   return (
-    <div className="App">
+    <Router>
       <Navbar />
-      {/* <Comment /> */}
-      {/* <Data />
-      <Count /> */}
-      <Clock />
-      <YoutubeSearch />
-      {/* <Inputdata /> */}
-      {/* <UnsplashSearch /> */}
-    </div>  
+      <Routes>
+        <Route path="/" exact element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/youtube" element={<YoutubeSearch />} />
+      </Routes>
+    </Router>
   );
 }
 

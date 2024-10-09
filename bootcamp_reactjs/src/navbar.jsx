@@ -1,68 +1,48 @@
-import React, { useState } from "react";
+// ./src/nav.jsx
+import React from 'react';
+import Clock from './clock'
+import "./navbar.css"
 
-function Navbar() {
-  const navbarStyle = {
-    backgroundColor: "#333",
-    overflow: "hidden",
-  };
-
-  const linkStyle = {
-    float: "left",
-    display: "block",
-    color: "white",
-    textAlign: "center",
-    padding: "14px 20px",
-    textDecoration: "none",
-    transition: "background-color 0.3s ease, color 0.3s ease",
-  };
-
-  const activeStyle = {
-    backgroundColor: "#04AA6D",
-    color: "white",
-  };
-
-  const hoverStyle = {
-    backgroundColor: "#ddd",
-    color: "black",
-  };
-
-  const [hovered, setHovered] = useState(null);
-
-  const handleMouseEnter = (index) => {
-    setHovered(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(null);
-  };
-
+const Navbar = () => {
   return (
-    <div style={navbarStyle}>
-      <a
-        href="#home"
-        style={hovered === 0 ? { ...linkStyle, ...hoverStyle } : { ...linkStyle, ...activeStyle }}
-        onMouseEnter={() => handleMouseEnter(0)}
-        onMouseLeave={handleMouseLeave}
-      >
-        Home
-      </a>
-      <a
-        href="#about"
-        style={hovered === 1 ? { ...linkStyle, ...hoverStyle } : linkStyle}
-        onMouseEnter={() => handleMouseEnter(1)}
-        onMouseLeave={handleMouseLeave}
-      >
-        About
-      </a>
-      <a
-        href="#contact"
-        style={hovered === 2 ? { ...linkStyle, ...hoverStyle } : linkStyle}
-        onMouseEnter={() => handleMouseEnter(2)}
-        onMouseLeave={handleMouseLeave}
-      >
-        Contact
-      </a>
-    </div>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+      <div className="container-fluid">
+        <a className="navbar-brand" href="/">BluBlood</a>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="d-flex align-items-center">
+          <Clock />
+        </div>
+
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <a className="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/about">About</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/contact">Contact</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/youtube">YouTube</a>
+            </li>
+            {/* Tambahkan item menu lainnya sesuai kebutuhan */}
+          </ul>
+        </div>
+      </div>
+    </nav>
   );
 }
 
