@@ -29,8 +29,8 @@ const Clock = () => {
 const styles = {
   clockContainer: {
     position: "absolute", // Posisi absolut pada layar
-    top: "5px", // Sesuaikan dengan tinggi navbar Anda
-    right: "0px", // Diatur agar berada di sisi kanan layar
+    top: "0px", // Sesuaikan dengan tinggi navbar Anda
+    left: "80px", // Diatur agar berada di sisi kanan layar
     color: "white", // Warna teks putih
     padding: "10px", // Memberikan padding untuk tampilan yang rapi
     borderRadius: "5px", // Membuat sudut container menjadi melengkung
