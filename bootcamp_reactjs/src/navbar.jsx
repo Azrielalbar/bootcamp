@@ -38,6 +38,9 @@ const Navbar = () => {
             <li className="nav-item">
               <a className="nav-link" href="/youtube">YouTube</a>
             </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/MyForm">MyForm</a>
+            </li>
             {/* Tambahkan item menu lainnya sesuai kebutuhan */}
           </ul>
         </div>

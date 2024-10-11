@@ -28,9 +28,9 @@ const Clock = () => {
 // CSS inline untuk mengatur posisi dan gaya tampilan jam
 const styles = {
   clockContainer: {
-    position: "absolute", // Posisi absolut pada layar
+    position: "center", // Posisi absolut pada layar
     top: "0px", // Sesuaikan dengan tinggi navbar Anda
-    left: "80px", // Diatur agar berada di sisi kanan layar
+    left: "100px", // Diatur agar berada di sisi kanan layar
     color: "white", // Warna teks putih
     padding: "10px", // Memberikan padding untuk tampilan yang rapi
     borderRadius: "5px", // Membuat sudut container menjadi melengkung

@@ -4,6 +4,7 @@ import store from './store';  // Import store Redux
 import Counter from './counter';  // Import komponen Counter
 
 
+
 const Home = () => {
     return (
         <div>
